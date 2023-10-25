@@ -64,12 +64,12 @@ TaskManager TaskManager::CreateInstanceForTesting(size_t n_threads) {
 }
 
 void TaskManager::TaskRunner(CvWithWaitersCount* cv, const size_t* siblings_counter) {
-  struct sched_param params {};
-  int ret = sched_setscheduler(0, SCHED_BATCH, &params);
-  ASSERT_RELEASE(ret == 0, "Filed to set scheduling policy.");
+  // struct sched_param params {};
+  // int ret = sched_setscheduler(0, SCHED_BATCH, &params);
+  // ASSERT_RELEASE(ret == 0, "Filed to set scheduling policy.");
 
-  int policy = sched_getscheduler(0);
-  ASSERT_RELEASE(policy == SCHED_BATCH, "the scheduling policy was not set properly.");
+  // int policy = sched_getscheduler(0);
+  // ASSERT_RELEASE(policy == SCHED_BATCH, "the scheduling policy was not set properly.");
   for (;;) {
     std::unique_lock<std::mutex> lock(mutex_);
     while (*siblings_counter > 0 && tasks_.empty()) {
