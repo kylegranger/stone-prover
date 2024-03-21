@@ -1,6 +1,6 @@
 {
-    "trace_path": "workspace/fibonacci_trace.json",
-    "memory_path": "workspace/fibonacci_memory.json",
+    "trace_path": "/workspace/fibonacci_trace.json",
+    "memory_path": "/workspace/fibonacci_memory.json",
     "pedersen": [],
     "range_check": [],
     "ecdsa": []
