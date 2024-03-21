@@ -55,15 +55,33 @@ void* gevulot_stone_verifier(const struct Task* task) {
   printf("gevulot_stone_verifier: Args: \n");
   char ** args = (char**)task->args;
   int nargs = 0;
+  std::vector<std::string> vargs;
+  std::string s;
+  vargs.push_back("cpu_air_verifier");
+  vargs.push_back("--logtostderr");
   while ((args != NULL) && (*args != NULL)) {
     printf("  %s\n", *args);
+    s += *args;
+    if (nargs & 1) {
+        vargs.push_back(s);
+        s = "";
+    } else {
+        s += "=";
+    }
     args++;
     nargs++;
   }
-  printf("gevulot_stone_verifier: num arguments = %d \n", nargs);
 
-  args = (char**)task->args;
-  run_main(nargs, args);
+  printf("gevulot_stone_verifier: vargs size = %zu\n", vargs.size());
+  auto argv = new char *[vargs.size()];
+  int argc = 0;
+  for (size_t i = 0; i < vargs.size(); i++) {
+    argv[i] = (char *)vargs[i].c_str();
+    printf("  varg %zu is %s\n", i, argv[i]);
+    argc++;
+  }
+
+  run_main(argc, argv);
 
   printf("gevulot_stone_verifier: Done with the task.\n");
 
@@ -77,8 +95,12 @@ int main(int argc, char **argv)
   for (int i = 0; i < argc; i++) {
     printf("    %d, %s\n", i, argv[i]);
   }
+  if (argc == 1) {
+    run(gevulot_stone_verifier);
+  } else {
+    run_main(argc, argv);
+  }
 
-  run(gevulot_stone_verifier);
   printf("cpu_air_verifier_main::main(): Terminating...\n");
   return 0;
 }

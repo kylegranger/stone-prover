@@ -51,19 +51,44 @@ void* gevulot_stone_prover(const struct Task* task) {
   printf("gevulot_stone_prover: Args: \n");
   char ** args = (char**)task->args;
   int nargs = 0;
+  std::vector<std::string> vargs;
+  std::string s;
+  vargs.push_back("cpu_air_prover");
+  vargs.push_back("--logtostderr");
+  char *out_file = NULL;
   while ((args != NULL) && (*args != NULL)) {
     printf("  %s\n", *args);
+    if (s.compare("--out_file=") == 0) {
+        out_file = *args;
+    }
+    s += *args;
+    if (nargs & 1) {
+        vargs.push_back(s);
+        s = "";
+    } else {
+        s += "=";
+    }
     args++;
     nargs++;
   }
-  printf("gevulot_stone_prover: num arguments = %d \n", nargs);
 
-  args = (char**)task->args;
-  run_main(nargs, args);
+  printf("gevulot_stone_prover: num arguments = %d\n", nargs);
+  printf("gevulot_stone_prover: vargs size = %zu\n", vargs.size());
+  auto argv = new char *[vargs.size()];
+  int argc = 0;
+  for (size_t i = 0; i < vargs.size(); i++) {
+    argv[i] = (char *)vargs[i].c_str();
+    printf("  varg %zu is %s\n", i, argv[i]);
+    argc++;
+  }
+
+  run_main(argc, argv);
 
   printf("gevulot_stone_prover: Done with the task.\n");
 
-  return new_task_result(NULL, 0);
+  void *result =  new_task_result(NULL, 0);
+  add_file_to_result(result, out_file);
+  return result;
 }
 
 int main(int argc, char **argv)
@@ -74,7 +99,12 @@ int main(int argc, char **argv)
     printf("    %d, %s\n", i, argv[i]);
   }
 
-  run(gevulot_stone_prover);
+  if (argc == 1) {
+    run(gevulot_stone_prover);
+  } else {
+    run_main(argc, argv);
+  }
+
   printf("cpu_air_prover_main::main(): Terminating...\n");
   return 0;
 }
