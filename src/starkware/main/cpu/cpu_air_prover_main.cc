@@ -25,6 +25,7 @@
 #include "starkware/statement/cpu/cpu_air_statement.h"
 #include "starkware/utils/profiling.h"
 #include "starkware/utils/stats.h"
+#include <dirent.h>
 
 extern "C" {
   #include "third_party/gevulot/shim.h"
@@ -45,6 +46,39 @@ int run_main(int argc, char** argv) {
 
   return 0;
 }
+
+// void print_dirs() {
+
+//   DIR *d;
+//   struct dirent *dir;
+//   d = opendir(".");
+//   if (d) {
+//     while ((dir = readdir(d)) != NULL) {
+//       printf(" in . : %s\n", dir->d_name);
+//     }
+//     closedir(d);
+//   }
+//   d = opendir("/workspace");
+//   if (d) {
+//     while ((dir = readdir(d)) != NULL) {
+//       printf(" in /workspace : %s\n", dir->d_name);
+//     }
+//     closedir(d);
+//   }
+
+//   printf("now change directory into /workspace");
+//   auto res = chdir("/workspace");
+//   printf("  res %d", res);
+
+//   d = opendir(".");
+//   if (d) {
+//     while ((dir = readdir(d)) != NULL) {
+//       printf(" in . : %s\n", dir->d_name);
+//     }
+//     closedir(d);
+//   }
+
+// }
 
 void* gevulot_stone_prover(const struct Task* task) {
   printf("gevulot_stone_prover: task id: %s\n", task->id);
@@ -82,6 +116,9 @@ void* gevulot_stone_prover(const struct Task* task) {
     argc++;
   }
 
+  // print_dirs();
+  auto res = chdir("/workspace");
+  printf("chdir: %d", res);
   run_main(argc, argv);
 
   printf("gevulot_stone_prover: Done with the task.\n");
