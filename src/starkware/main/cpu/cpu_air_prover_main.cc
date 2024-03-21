@@ -47,39 +47,6 @@ int run_main(int argc, char** argv) {
   return 0;
 }
 
-// void print_dirs() {
-
-//   DIR *d;
-//   struct dirent *dir;
-//   d = opendir(".");
-//   if (d) {
-//     while ((dir = readdir(d)) != NULL) {
-//       printf(" in . : %s\n", dir->d_name);
-//     }
-//     closedir(d);
-//   }
-//   d = opendir("/workspace");
-//   if (d) {
-//     while ((dir = readdir(d)) != NULL) {
-//       printf(" in /workspace : %s\n", dir->d_name);
-//     }
-//     closedir(d);
-//   }
-
-//   printf("now change directory into /workspace");
-//   auto res = chdir("/workspace");
-//   printf("  res %d", res);
-
-//   d = opendir(".");
-//   if (d) {
-//     while ((dir = readdir(d)) != NULL) {
-//       printf(" in . : %s\n", dir->d_name);
-//     }
-//     closedir(d);
-//   }
-
-// }
-
 void* gevulot_stone_prover(const struct Task* task) {
   printf("gevulot_stone_prover: task id: %s\n", task->id);
   printf("gevulot_stone_prover: Args: \n");
@@ -116,12 +83,11 @@ void* gevulot_stone_prover(const struct Task* task) {
     argc++;
   }
 
-  // print_dirs();
   auto res = chdir("/workspace");
-  printf("chdir: %d", res);
+  printf("  chdir: %d", res);
   run_main(argc, argv);
 
-  printf("gevulot_stone_prover: Done with the task.\n");
+  printf("gevulot_stone_prover: Done with task.\n");
 
   void *result =  new_task_result(NULL, 0);
   add_file_to_result(result, out_file);

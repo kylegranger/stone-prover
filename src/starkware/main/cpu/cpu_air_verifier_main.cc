@@ -22,11 +22,16 @@
 
 #include "starkware/main/verifier_main_helper.h"
 #include "starkware/statement/cpu/cpu_air_statement.h"
+#include "starkware/utils/json.h"
 
 extern "C" {
   #include "third_party/gevulot/shim.h"
 }
 
+uint64_t timeSinceEpochMillisec() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
 
 int run_main(int argc, char** argv) {
   using namespace starkware;       // NOLINT
@@ -59,7 +64,11 @@ void* gevulot_stone_verifier(const struct Task* task) {
   std::string s;
   vargs.push_back("cpu_air_verifier");
   vargs.push_back("--logtostderr");
-  while ((args != NULL) && (*args != NULL)) {
+  char *in_file = nullptr;
+  while ((args != nullptr) && (*args != nullptr)) {
+    if (s.compare("--in_file=") == 0) {
+        in_file = *args;
+    }
     printf("  %s\n", *args);
     s += *args;
     if (nargs & 1) {
@@ -81,11 +90,25 @@ void* gevulot_stone_verifier(const struct Task* task) {
     argc++;
   }
 
-  run_main(argc, argv);
+  auto res  = run_main(argc, argv);
+
+  bool is_success = res == 0;
+  std::string message = is_success ? "Starkware verifier result: success" : "Starkware verifier result: fail";
+  uint64_t timestamp = timeSinceEpochMillisec();
+  std::string proof_file = in_file;
+
+  Json::Value verifier_result;
+  verifier_result["is_success"] = is_success;
+  verifier_result["message"] = message;
+  verifier_result["timestamp"] = timestamp;
+  verifier_result["proof_file"] = proof_file;
+  auto jresult = verifier_result.toStyledString();
+  auto jlength = strlen(jresult.c_str());
+  printf("  jresult %s has length %zu\n", jresult.c_str(), jlength);
 
   printf("gevulot_stone_verifier: Done with the task.\n");
 
-  return new_task_result(NULL, 0);
+  return new_task_result((uint8_t *)jresult.c_str(), jlength);
 }
 
 int main(int argc, char **argv)
