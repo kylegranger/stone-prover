@@ -56,7 +56,7 @@ void* gevulot_stone_prover(const struct Task* task) {
   std::string s;
   vargs.push_back("cpu_air_prover");
   vargs.push_back("--logtostderr");
-  char *out_file = NULL;
+  char *out_file = (char *)"/workspace/proof.json";
   while ((args != NULL) && (*args != NULL)) {
     printf("  %s\n", *args);
     if (s.compare("--out_file=") == 0) {
@@ -84,7 +84,7 @@ void* gevulot_stone_prover(const struct Task* task) {
   }
 
   auto res = chdir("/workspace");
-  printf("  chdir: %d", res);
+  printf("chdir: %d", res);
   run_main(argc, argv);
 
   printf("gevulot_stone_prover: Done with task.\n");

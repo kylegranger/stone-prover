@@ -64,7 +64,7 @@ void* gevulot_stone_verifier(const struct Task* task) {
   std::string s;
   vargs.push_back("cpu_air_verifier");
   vargs.push_back("--logtostderr");
-  char *in_file = nullptr;
+  char *in_file = (char *)"/workspace/proof.json";
   while ((args != nullptr) && (*args != nullptr)) {
     if (s.compare("--in_file=") == 0) {
         in_file = *args;
