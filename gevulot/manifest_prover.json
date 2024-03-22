@@ -1,0 +1,20 @@
+{
+  "RebootOnExit": true,
+  "RunConfig": {
+    "CPUs": 20,
+    "Memory": "24g"
+  },
+  "ManifestPassthrough": {
+    "readonly_rootfs": "true"
+  },
+  "Env":{
+    "RUST_BACKTRACE": "1",
+    "RUST_LOG": "trace"
+  },
+  "Program":"./build/bazelbin/src/starkware/main/cpu/cpu_air_prover",
+  "Files": ["gevulot/cpu_air_params.json", "gevulot/cpu_air_prover_config.json"],
+  "Mounts": {
+    "%1": "/workspace"
+  }
+}
+

@@ -1,5 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
+
 cc_binary(
     name = "cpu_air_prover",
     srcs = [
@@ -174,6 +175,7 @@ cc_binary(
         "//src/third_party/cppitertools/internal:iterbase.hpp",
         "//src/third_party/gsl:gsl-lite.hpp",
         "//src/third_party/jsoncpp/json:json.h",
+        "//src/third_party/gevulot:shim.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -181,6 +183,7 @@ cc_binary(
         "//src/starkware/main:prover_main_helper",
         "//src/starkware/statement/cpu:cpu_air_statement",
         "//src/third_party",
+        "//src/third_party/gevulot:gevulot_shim_ffi",
     ],
 )
 
@@ -341,6 +344,7 @@ cc_binary(
         "//src/third_party/cppitertools/internal:iterbase.hpp",
         "//src/third_party/gsl:gsl-lite.hpp",
         "//src/third_party/jsoncpp/json:json.h",
+        "//src/third_party/gevulot:shim.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -348,5 +352,6 @@ cc_binary(
         "//src/starkware/main:verifier_main_helper",
         "//src/starkware/statement/cpu:cpu_air_statement",
         "//src/third_party",
+        "//src/third_party/gevulot:gevulot_shim_ffi",
     ],
 )

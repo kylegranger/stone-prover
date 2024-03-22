@@ -25,8 +25,14 @@
 #include "starkware/statement/cpu/cpu_air_statement.h"
 #include "starkware/utils/profiling.h"
 #include "starkware/utils/stats.h"
+#include <dirent.h>
 
-int main(int argc, char** argv) {
+extern "C" {
+  #include "third_party/gevulot/shim.h"
+}
+
+
+int run_main(int argc, char** argv) {
   using namespace starkware;       // NOLINT
   using namespace starkware::cpu;  // NOLINT
   gflags::SetVersionString(GetProverVersionString());
@@ -40,3 +46,69 @@ int main(int argc, char** argv) {
 
   return 0;
 }
+
+void* gevulot_stone_prover(const struct Task* task) {
+  printf("gevulot_stone_prover: task id: %s\n", task->id);
+  printf("gevulot_stone_prover: Args: \n");
+  char ** args = (char**)task->args;
+  int nargs = 0;
+  std::vector<std::string> vargs;
+  std::string s;
+  vargs.push_back("cpu_air_prover");
+  vargs.push_back("--logtostderr");
+  char *out_file = (char *)"/workspace/proof.json";
+  while ((args != NULL) && (*args != NULL)) {
+    printf("  %s\n", *args);
+    if (s.compare("--out_file=") == 0) {
+        out_file = *args;
+    }
+    s += *args;
+    if (nargs & 1) {
+        vargs.push_back(s);
+        s = "";
+    } else {
+        s += "=";
+    }
+    args++;
+    nargs++;
+  }
+
+  printf("gevulot_stone_prover: num arguments = %d\n", nargs);
+  printf("gevulot_stone_prover: vargs size = %zu\n", vargs.size());
+  auto argv = new char *[vargs.size()];
+  int argc = 0;
+  for (size_t i = 0; i < vargs.size(); i++) {
+    argv[i] = (char *)vargs[i].c_str();
+    printf("  varg %zu is %s\n", i, argv[i]);
+    argc++;
+  }
+
+  auto res = chdir("/workspace");
+  printf("chdir: %d", res);
+  run_main(argc, argv);
+
+  printf("gevulot_stone_prover: Done with task.\n");
+
+  void *result =  new_task_result(NULL, 0);
+  add_file_to_result(result, out_file);
+  return result;
+}
+
+int main(int argc, char **argv)
+{
+  printf("cpu_air_prover_main::main(): argc %d\n", argc);
+  printf("  Args: \n");
+  for (int i = 0; i < argc; i++) {
+    printf("    %d, %s\n", i, argv[i]);
+  }
+
+  if (argc == 1) {
+    run(gevulot_stone_prover);
+  } else {
+    run_main(argc, argv);
+  }
+
+  printf("cpu_air_prover_main::main(): Terminating...\n");
+  return 0;
+}
+

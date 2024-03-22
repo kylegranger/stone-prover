@@ -1,0 +1,19 @@
+{
+  "RebootOnExit": true,
+  "RunConfig": {
+    "CPUs": 2,
+    "Memory": "2g"
+  },
+  "ManifestPassthrough": {
+    "readonly_rootfs": "true"
+  },
+  "Env":{
+    "RUST_BACKTRACE": "1",
+    "RUST_LOG": "trace"
+  },
+  "Program":"./build/bazelbin/src/starkware/main/cpu/cpu_air_verifier",
+  "Mounts": {
+    "%1": "/workspace"
+  }
+}
+

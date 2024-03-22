@@ -30,6 +30,8 @@ DEFINE_uint32(n_threads, std::thread::hardware_concurrency(), "Number of threads
 namespace starkware {
 
 TaskManager::TaskManager(const size_t n_threads) {
+      LOG(INFO) << "TaskManager::TaskManager : n_threads " << n_threads << ".";
+
   ASSERT_RELEASE(n_threads > 0, "Number of threads must be at least 1");
 #ifdef __EMSCRIPTEN__
   ASSERT_RELEASE(n_threads == 1, "Multi-threading is not yet supported in WebAssembly");

@@ -5408,7 +5408,7 @@ Value& StreamWriterBuilder::operator[](JSONCPP_STRING key) {
 void StreamWriterBuilder::setDefaults(Json::Value* settings) {
   //! [StreamWriterBuilderDefaults]
   (*settings)["commentStyle"] = "All";
-  (*settings)["indentation"] = "\t";
+  (*settings)["indentation"] = "";
   (*settings)["enableYAMLCompatibility"] = false;
   (*settings)["dropNullPlaceholders"] = false;
   (*settings)["useSpecialFloats"] = false;
