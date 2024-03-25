@@ -25,7 +25,7 @@ Each file input requires a hash value, which is a 256-bit value and 64-char hex 
 ./gevulot-cli calculate-hash --file private_input.json
 ```
 
-## 3 Executa the proof
+## 3 Execute the proof
 
 ### 3.1  The configuration files
 
@@ -154,12 +154,11 @@ Verifier hash:140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1.
 ```
 
 
-### 3.3  Executate the proof
+### 3.3  Execute the proof
 
 Prover hash:ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f573d
 Verifier hash:140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1.
 
-### 3.4  Executate the proof
 
 ## Verify the results
 
