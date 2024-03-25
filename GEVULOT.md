@@ -1,41 +1,26 @@
 # Running the Stone Prover in a Gevulot node
 
-This readme will take you through all the steps to build and run the Stone prover.
+This readme will guide you through the steps necesary to run the Stone prover on Gevulot.
 
 
 
+## 1 Generate the Inputs
+
+We begin with generating the required input files.
+
+### 1.1 Compile a Cairo program
+
+[todo]
 
 
-## 1 Gathers the Inputs
-
-This process begin with the files generated from 
-
-## 2 Processing the inputs
+### 1.2  The configuration files
 
 
-### 2.1  Upload the input files
+The `prover_config_file` and `parameter_file` parameters point to files embedded in the prover unikernel.  This is their contents:
 
-The four input files must have a public url, in order for the Gevulot nodes to access them in a proof.  Often, an S3 bucket is used. It is important to make sure that the files have public read permission
 
-### 2.2  Calculate the hashes
-
-Each file input requires a hash value, which is a 256-bit value and 64-char hex string.  That may be computed by `gevulot-cli`.
-
+`cpu_air_params.json`:
 ```
-./gevulot-cli calculate-hash --file private_input.json
-```
-
-## 3 Execute the proof
-
-### 3.1  The configuration files
-
-
-The `prover_config_file` and `parameter_file` parameters point to files embedded in the prover unikernel.  This is their contents
-
-
-
-`cpu_air_params.json`
-
 {
     "field": "PrimeField0",
     "stark": {
@@ -53,8 +38,10 @@ The `prover_config_file` and `parameter_file` parameters point to files embedded
     },
     "use_extension_field": false
 }
+```
 
-`cpu_air_prover_config.json`
+`cpu_air_prover_config.json`:
+```
 {
     "cached_lde_config": {
         "store_full_lde": false,
@@ -64,17 +51,56 @@ The `prover_config_file` and `parameter_file` parameters point to files embedded
     "n_out_of_memory_merkle_layers": 1,
     "table_prover_n_tasks_per_segment": 32
 }
+```
 
-Of course, you may choose or require the use of different config files.  In that case, treat them like normal input files, and changes the parameters in the struct passed in to the prover.
+Of course, you may choose or require the use of different config files.  In that case, treat them like normal input files, and changes the parameters in the struct passed in to the prover (see section 3.1)
+
+
+## 2 Processing the inputs
+
+### 2.1  Upload the input files
+
+All four input files must have a public url, so that Gevulot nodes may access them in a proof.  Often, an S3 bucket is used. It is important to make sure that the files have public read permission
+
+### 2.2  Calculate the hashes
+
+In addition to a url, each input file requires a hash value, which is a 256-bit value or 64-char hex string.  That may be computed with `gevulot-cli`, using the calculate-hash action and passing in the file path.  Depending on where your `gevulot-cli` is, you may need to change the path.
+
+```
+./gevulot-cli calculate-hash --file  workspace/fibonacci_memory.json
+The hash of the file is: 2fa6e451e18f82959c58363b274586964c133c71d1fae5116027c0b5de245f8c
+
+./gevulot-cli calculate-hash --file  workspace/fibonacci_public_input.json 
+The hash of the file is: 82c352f2c1a5088c71aa87cb6c106c36b2eb56d207ef22d2d2c61a5e49abb521
+
+./gevulot-cli calculate-hash --file  workspace/fibonacci_private_input.json 
+The hash of the file is: 3a26731cba5db571f740345cb2803687b41b329e4f033ee8bc1a7a26c508fae9
+
+./gevulot-cli calculate-hash --file  workspace/fibonacci_trace.json 
+The hash of the file is: b345e7ca8ab9bba28fe1438b3cabc8e2a9b6029c68663326be5b59097197903d
+
+```
+
+## 3 Execute the proof
 
 ### 3.2  The params stucture for the proof
 
-Note that the program hashes are static, corresponding to the deployed prover and verifier
 
-```
-Stone Prover hash:   ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f573d
-Stone Verifier hash: 140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1.
-```
+Use the json structure below as a template for creating a parameter structure.  You will observe:
+- all five argument are passed in
+  - the `/gevulot` path is used for the default cofiguration files, embedded in the prover image.
+  - the `/workspace` path is used for dynamic file instances
+- four input files are passed in, with their url and hash value (in the `local_path` property)
+- although the trace and memory files are not passed in as arguments, they must exist as input files, as they are both referenced from the private inputs.
+- the output proof from the prover is references as an input into the verifier
+
+
+Note that the program hashes are static, corresponding to the currently deployed instances of the prover and verifier.
+
+Stone Prover hash: ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f573d
+
+Stone Verifier hash: 140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1
+
 
 ```
 [
@@ -179,14 +205,14 @@ Use the transaction hash to get the verifier output.
 First, you can query the transaction itself, by calling `gevulot-cli` with the `get-tx` action and the hash.  It will return the parameters passed into the `exec` call, along with some additional metadata.
 
 ```
-$ ./gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 get-tx 2c03326e4e64825a0bf4ac11dfb8c98ae5d7a2698805a7f31d6db660c987a9de
+./gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 get-tx 2c03326e4e64825a0bf4ac11dfb8c98ae5d7a2698805a7f31d6db660c987a9de
 ```
 ### 4.2 View the transaction tree
 
 Now, print out the transaction tree.  The verification results will be on a `Leaf` there.
 
 ```
-./target/release/gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 print-tx-tree 2c03326e4e64825a0bf4ac11dfb8c98ae5d7a2698805a7f31d6db660c987a9de 
+./gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 print-tx-tree 2c03326e4e64825a0bf4ac11dfb8c98ae5d7a2698805a7f31d6db660c987a9de 
 
 Root: 2c03326e4e64825a0bf4ac11dfb8c98ae5d7a2698805a7f31d6db660c987a9de
         Node: c495dd245a3f9dedcd884c932eca68494cd87def28204e33f97ddf22cd35f138
@@ -201,7 +227,7 @@ You may see several Leaf entries.  Choose the first, and do a `get-tx` on it to 
 
 
 ```
-$ ./target/release/gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 get-tx f4f981f594ead6b685cbd46c7c79baa5bdf7f7c4cd4248ec66d9dfd12d08959f
+./gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 get-tx f4f981f594ead6b685cbd46c7c79baa5bdf7f7c4cd4248ec66d9dfd12d08959f
 
 {"author":"0419f335c2b0a5f8b1bd4f5b079bd0756b21903f06e35bbea9f03614f598d8f356887af6df60a3d90981284cf4fafd2f288c5663238d627eaa21c91a8ee4088963","hash":"f4f981f594ead6b685cbd46c7c79baa5bdf7f7c4cd4248ec66d9dfd12d08959f","payload":{"Verification":{"parent":"c495dd245a3f9dedcd884c932eca68494cd87def28204e33f97ddf22cd35f138","verifier":"140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1","verification":"eyJpc19zdWNjZXNzIjp0cnVlLCJtZXNzYWdlIjoiU3Rhcmt3YXJlIHZlcmlmaWVyIHJlc3VsdDogc3VjY2VzcyIsInByb29mX2ZpbGUiOiIvd29ya3NwYWNlL3Byb29mLmpzb24iLCJ0aW1lc3RhbXAiOjE3MTEzNTA2MDIwNzl9Cg==","files":[]}},"nonce":0,"signature":"1e7f99b1e5c37e3bafb750280e3d82b7ba64ad102fea9946c1ab93866f49dd6e5375007da6a018857ec0e896d01b1113aa7ce601b073a157110a3d6d069e3cff"}
 ```
@@ -212,7 +238,7 @@ $ ./target/release/gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 get-
 Under payload.Verification.verification, we see a string encoded as base64. Use `jq` plus `base64` to decode that at the command line.  Now we can read the json text generated by the veriier.
 
 ```
-$ ./gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 get-tx f4f981f594ead6b685cbd46c7c79baa5bdf7f7c4cd4248ec66d9dfd12d08959f  | jq -r '.payload.Verification.verification' | base64 -d
+./gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 get-tx f4f981f594ead6b685cbd46c7c79baa5bdf7f7c4cd4248ec66d9dfd12d08959f  | jq -r '.payload.Verification.verification' | base64 -d
 
 {"is_success":true,"message":"Starkware verifier result: success","proof_file":"/workspace/proof.json","timestamp":1711350602079}
 ```
