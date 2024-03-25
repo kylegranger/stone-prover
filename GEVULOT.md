@@ -87,6 +87,7 @@ The hash of the file is: 82c352f2c1a5088c71aa87cb6c106c36b2eb56d207ef22d2d2c61a5
 ./gevulot-cli calculate-hash --file  workspace/fibonacci_private_input.json
 The hash of the file is: 3a26731cba5db571f740345cb2803687b41b329e4f033ee8bc1a7a26c508fae9
 
+./gevulot-cli calculate-hash --file  workspace/fibonacci_trace.json
 The hash of the file is: b345e7ca8ab9bba28fe1438b3cabc8e2a9b6029c68663326be5b59097197903d
 
 ```
