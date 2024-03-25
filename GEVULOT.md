@@ -13,10 +13,36 @@ We begin with generating the required input files.
 [todo]
 
 
-### 1.2  The configuration files
+## 2 Processing the inputs
+
+### 2.1  Upload the input files
+
+All four input files must have a public url, so that Gevulot nodes may access them in a proof.
+
+It is important to make sure that the files have public read permission.
+
+### 2.2  Calculate the hashes
+
+In addition to a url, each input file requires a hash value, which is a 256-bit value printed as a 64-character hex string.  That value may be computed with `gevulot-cli`, using the calculate-hash action and passing in the file path.  Depending on where your `gevulot-cli` is, you may need to change the path.
+
+```
+./gevulot-cli calculate-hash --file  workspace/fibonacci_memory.json
+The hash of the file is: 2fa6e451e18f82959c58363b274586964c133c71d1fae5116027c0b5de245f8c
+
+./gevulot-cli calculate-hash --file  workspace/fibonacci_public_input.json
+The hash of the file is: 82c352f2c1a5088c71aa87cb6c106c36b2eb56d207ef22d2d2c61a5e49abb521
+
+./gevulot-cli calculate-hash --file  workspace/fibonacci_private_input.json
+The hash of the file is: 3a26731cba5db571f740345cb2803687b41b329e4f033ee8bc1a7a26c508fae9
+
+The hash of the file is: b345e7ca8ab9bba28fe1438b3cabc8e2a9b6029c68663326be5b59097197903d
+
+```
+
+### 2.3  The configuration files
 
 
-The `prover_config_file` and `parameter_file` parameters point to files embedded in the prover unikernel.  This is their contents:
+Two configuration files are passed in to the `cpu_air_prover`.  In our implementation,  default `prover_config_file` and `parameter_file` parameters point to files embedded in the prover unikernel.  This is their contents:
 
 
 `cpu_air_params.json`:
@@ -53,53 +79,27 @@ The `prover_config_file` and `parameter_file` parameters point to files embedded
 }
 ```
 
-Of course, you may choose or require the use of different config files.  In that case, treat them like normal input files, and changes the parameters in the struct passed in to the prover (see section 3.1)
+You may require (or choose) the employ different configuration files.  In that case, treat them like normal input files, and change the parameters in the struct passed in to the prover (see section 3.1)
 
 
-## 2 Processing the inputs
 
-### 2.1  Upload the input files
 
-All four input files must have a public url, so that Gevulot nodes may access them in a proof.  Often, an S3 bucket is used. It is important to make sure that the files have public read permission
-
-### 2.2  Calculate the hashes
-
-In addition to a url, each input file requires a hash value, which is a 256-bit value or 64-char hex string.  That may be computed with `gevulot-cli`, using the calculate-hash action and passing in the file path.  Depending on where your `gevulot-cli` is, you may need to change the path.
-
-```
-./gevulot-cli calculate-hash --file  workspace/fibonacci_memory.json
-The hash of the file is: 2fa6e451e18f82959c58363b274586964c133c71d1fae5116027c0b5de245f8c
-
-./gevulot-cli calculate-hash --file  workspace/fibonacci_public_input.json 
-The hash of the file is: 82c352f2c1a5088c71aa87cb6c106c36b2eb56d207ef22d2d2c61a5e49abb521
-
-./gevulot-cli calculate-hash --file  workspace/fibonacci_private_input.json 
-The hash of the file is: 3a26731cba5db571f740345cb2803687b41b329e4f033ee8bc1a7a26c508fae9
-
-./gevulot-cli calculate-hash --file  workspace/fibonacci_trace.json 
-The hash of the file is: b345e7ca8ab9bba28fe1438b3cabc8e2a9b6029c68663326be5b59097197903d
-
-```
 
 ## 3 Execute the proof
 
 ### 3.2  The params stucture for the proof
 
 
-Use the json structure below as a template for creating a parameter structure.  You will observe:
-- all five argument are passed in
+Use the json structure below as a template for creating the parameter inputs.  You will observe:
+- five arguments are passed in as key/value pairs
+- two folders used
   - the `/gevulot` path is used for the default cofiguration files, embedded in the prover image.
   - the `/workspace` path is used for dynamic file instances
-- four input files are passed in, with their url and hash value (in the `local_path` property)
-- although the trace and memory files are not passed in as arguments, they must exist as input files, as they are both referenced from the private inputs.
-- the output proof from the prover is references as an input into the verifier
+- four input files are passed in, with their respective urls and hash values, the latter associated with the `local_path` property.
+- although the trace and memory files are not explicitly passed in as arguments, they must be listed as input files, as both files are referenced from the private inputs.
+- the output proof from the prover is referenced as an input into the verifier.
 
 
-Note that the program hashes are static, corresponding to the currently deployed instances of the prover and verifier.
-
-Stone Prover hash: ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f573d
-
-Stone Verifier hash: 140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1
 
 
 ```
@@ -179,17 +179,23 @@ Stone Verifier hash: 140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce6783
 ]
 ```
 
+Note: the program hashes are static, corresponding to the currently deployed instances of the prover and verifier.
+
+```
+Stone Prover hash: ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f573d
+Stone Verifier hash: 140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1
+```
 
 ### 3.3  Execute the proof
 
-You must then embed the json struct in a command line call to `gevulot-cli`, with the `exec` action
+We then embed the json struct in a command line call to `gevulot-cli`, using the `exec` action.
 
 
 ```
 ./gevulot-cli --jsonurl http://localhost:9944  exec --tasks '[{"program":"ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f573d","cmd_args":[{"name":"--out_file","value":"/workspace/proof.json"},{"name":"--private_input_file","value":"/workspace/fibonacci_private_input.json"},{"name":"--public_input_file","value":"/workspace/fibonacci_public_input.json"},{"name":"--prover_config_file","value":"/gevulot/cpu_air_prover_config.json"},{"name":"--parameter_file","value":"/gevulot/cpu_air_params.json"}],"inputs":[{"Input":{"local_path":"2fa6e451e18f82959c58363b274586964c133c71d1fae5116027c0b5de245f8c","vm_path":"/workspace/fibonacci_memory.json","file_url":"https://gevulot.eu-central-1.linodeobjects.com/fibonacci_memory.json"}},{"Input":{"local_path":"3a26731cba5db571f740345cb2803687b41b329e4f033ee8bc1a7a26c508fae9","vm_path":"/workspace/fibonacci_private_input.json","file_url":"https://gevulot.eu-central-1.linodeobjects.com/fibonacci_private_input.json"}},{"Input":{"local_path":"82c352f2c1a5088c71aa87cb6c106c36b2eb56d207ef22d2d2c61a5e49abb521","vm_path":"/workspace/fibonacci_public_input.json","file_url":"https://gevulot.eu-central-1.linodeobjects.com/fibonacci_public_input.json"}},{"Input":{"local_path":"b345e7ca8ab9bba28fe1438b3cabc8e2a9b6029c68663326be5b59097197903d","vm_path":"/workspace/fibonacci_trace.json","file_url":"https://gevulot.eu-central-1.linodeobjects.com/fibonacci_trace.json"}}]},{"program":"140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1","cmd_args":[{"name":"--in_file","value":"/workspace/proof.json"}],"inputs":[{"Output":{"source_program":"ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f573d","file_name":"/workspace/proof.json"}}]}]'
 ```
 
-You will get back a transaction hash
+You will get back a transaction hash:
 
 ```
 Programs send to execution correctly. Tx hash:2c03326e4e64825a0bf4ac11dfb8c98ae5d7a2698805a7f31d6db660c987a9de
@@ -209,7 +215,7 @@ First, you can query the transaction itself, by calling `gevulot-cli` with the `
 ```
 ### 4.2 View the transaction tree
 
-Now, print out the transaction tree.  The verification results will be on a `Leaf` there.
+Now, print out the transaction tree using the `print-tx-tree` action.  The verification results will be on the `Leafs` there.
 
 ```
 ./gevulot-cli --jsonurl http://api.devnet.gevulot.com:9944 print-tx-tree 2c03326e4e64825a0bf4ac11dfb8c98ae5d7a2698805a7f31d6db660c987a9de 
