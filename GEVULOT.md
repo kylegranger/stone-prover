@@ -17,13 +17,13 @@ We begin with generating the required input files.
 
 ### 2.1  Upload the input files
 
-All four input files must have a public url, so that Gevulot nodes may access them in a proof.
+All four input files must have a public url, so that Gevulot nodes may access them in a proof.  One option is to upload the files to an S3 bucket.
 
 It is important to make sure that the files have public read permission.
 
 ### 2.2  Calculate the hashes
 
-In addition to a url, each input file requires a hash value, which is a 256-bit value printed as a 64-character hex string.  That value may be computed with `gevulot-cli`, using the calculate-hash action and passing in the file path.  Depending on where your `gevulot-cli` is, you may need to change the path.
+In addition to a url, each input file requires a hash value, which is a 256-bit value formatted as a 64-character hex string.  That value may be computed with `gevulot-cli`, using the calculate-hash action and passing in the file path.  Depending on where your `gevulot-cli` is, you may need to change the path.
 
 ```
 ./gevulot-cli calculate-hash --file  workspace/fibonacci_memory.json
