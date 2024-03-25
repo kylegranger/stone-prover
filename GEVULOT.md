@@ -87,7 +87,7 @@ You may require (or choose) the employ different configuration files.  In that c
 
 ## 3 Execute the proof
 
-### 3.2  The params stucture for the proof
+### 3.1  The params stucture for the proof
 
 
 Use the json structure below as a template for creating the parameter inputs.  You will observe:
@@ -186,7 +186,7 @@ Stone Prover hash: ae713ce2635872d7dfe8607a5ebd129164954276d7cab131977bdc24c02f5
 Stone Verifier hash: 140abc53852d49b3d940c1df462d5eec0fb6b55adaae49f8be07bce678378ac1
 ```
 
-### 3.3  Execute the proof
+### 3.2  Execute the proof
 
 We then embed the json struct in a command line call to `gevulot-cli`, using the `exec` action.
 
