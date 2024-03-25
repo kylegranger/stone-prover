@@ -7,10 +7,10 @@ This readme will guide you through the steps necesary to run the Stone prover on
 ## 1 Generate the Inputs
 
 We begin by generating the required input files.  There are two main steps to this:
-- compile a cairo program
+- compile a Cairo program
 - run the program to generate the inputs.
 
-We will be going through the same steps described in the Starkware documention ([here](https://github.com/starkware-libs/stone-prover?tab=readme-ov-file#creating-and-verifying-a-proof-of-a-cairozero-program))
+We will be going through the same steps described in the Starkware documention [here](https://github.com/starkware-libs/stone-prover?tab=readme-ov-file#creating-and-verifying-a-proof-of-a-cairozero-program).
 
 
 ### 1.1 Install Cairo
@@ -29,14 +29,14 @@ pip install cairo-lang==0.12.0
 
 We will compile the fibonacci test program located in the `/e2etest` folder
 
-Go into that folder and compile the cairo program there.
+Go into that folder and compile the Cairo program there.
 
 ```
 cd e2etest
 cairo-compile fibonacci.cairo --output fibonacci_compiled.json --proof_mode
 ```
 
-A new file has been created:  `fibonacci_compiled.json`
+A new file has been created:  `fibonacci_compiled.json`.
 
 ### 1.3 Run the program
 
@@ -63,7 +63,7 @@ fibonacci_memory.json
 fibonacci_trace.json
 ```
 
-We now have all of the input files required for the Stone prover.
+We now have all of the inputs required for the Stone prover.
 
 ## 2 Processing the inputs
 
