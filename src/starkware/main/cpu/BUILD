@@ -1,6 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
 
+
+
 cc_binary(
     name = "cpu_air_prover",
     srcs = [
@@ -185,7 +187,10 @@ cc_binary(
         "//src/third_party",
         "//src/third_party/gevulot:gevulot_shim_ffi",
     ],
+    linkopts = ["-lomp5"],
+    copts = ["-fopenmp"],
 )
+
 
 cc_binary(
     name = "cpu_air_verifier",

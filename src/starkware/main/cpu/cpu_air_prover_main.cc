@@ -26,11 +26,35 @@
 #include "starkware/utils/profiling.h"
 #include "starkware/utils/stats.h"
 #include <dirent.h>
+#include <omp.h>
 
 extern "C" {
   #include "third_party/gevulot/shim.h"
 }
 
+
+void show_dir_content(char * path)
+{
+  printf("contents for %s\n", path);
+
+    DIR * d = opendir(path); // open the path
+  if(d==NULL) return; // if was not able, return
+  struct dirent * dir; // for the directory entries
+  while ((dir = readdir(d)) != NULL) // if we were able to read somehting from the directory
+    {
+      if(dir-> d_type != DT_DIR) // if the type is not directory just print it with blue color
+        printf("%s\n", dir->d_name);
+      else
+      if(dir -> d_type == DT_DIR && strcmp(dir->d_name,".")!=0 && strcmp(dir->d_name,"..")!=0 ) // if it is a directory
+      {
+        printf("%s\n", dir->d_name); // print its name in green
+        char d_path[255]; // here I am using sprintf which is safer than strcat
+        sprintf(d_path, "%s/%s", path, dir->d_name);
+        show_dir_content(d_path); // recall with the new path
+      }
+    }
+    closedir(d); // finally close the directory
+}
 
 int run_main(int argc, char** argv) {
   using namespace starkware;       // NOLINT
@@ -101,6 +125,39 @@ int main(int argc, char **argv)
   for (int i = 0; i < argc; i++) {
     printf("    %d, %s\n", i, argv[i]);
   }
+
+    show_dir_content((char *)".");
+    show_dir_content((char *)"/workspace");
+
+
+    auto ncpus = std::thread::hardware_concurrency();
+    printf("std::thread::hardware_concurrency %d\n", ncpus);
+
+    int nThreads = omp_get_num_threads();
+    printf("omp_get_num_threads A %d\n", nThreads);
+
+    // omp_set_num_threads(ncpus);
+    // nThreads = omp_get_num_threads();
+    // printf("omp_get_num_threads B %d\n", nThreads);
+
+    printf("do parallel omg run\n");
+    #pragma omp parallel
+    {
+        int idThread = omp_get_thread_num();
+        int nThreads = omp_get_num_threads();
+        printf("idThread %d\n", idThread);
+        printf("nThreads %d\n", nThreads);
+    }
+    printf("done parallel omg run\n");
+
+    // printf("get omp_get_max_threads\n");
+    // auto nthreads = omp_get_max_threads();
+    // printf("omp_get_max_threads = %d\n", nthreads);
+    // printf("get omp_get_max_threads");
+    // // auto nprocs = omp_get_num_procs();
+    // printf("omp_get_num_procs = %d", nprocs);
+
+
 
   if (argc == 1) {
     run(gevulot_stone_prover);
