@@ -89,3 +89,17 @@ Tx Hash:ac0bfa0093344217e2e59da82f666e328d0925ca2d20fc529f5052c0a6d40522
     --public_input_file=fibonacci_public_input.json \
     --prover_config_file=cpu_air_prover_config.json \
     --parameter_file=cpu_air_params.json
+
+
+nix --extra-experimental-features "nix-command flakes" run github:thiagokokada/nix-alien -- ./build/bazelbin/src/starkware/main/cpu/cpu_air_prover
+
+nix --extra-experimental-features bundle ./build/bazelbin/src/starkware/main/cpu/cpu_air_prover
+
+export NIXPKGS_ALLOW_UNFREE=1
+nix-shell -p steam-run --run "steam-run ./build/bazelbin/src/starkware/main/cpu/cpu_air_prover"
+
+wget https://apt.llvm.org/llvm.sh
+chmod +x llvm.sh
+sudo ./llvm.sh <version number>
+
+sudo apt-get purge llvm-6.0

@@ -118,11 +118,11 @@ int main(int argc, char **argv)
   for (int i = 0; i < argc; i++) {
     printf("    %d, %s\n", i, argv[i]);
   }
-  if (argc == 1) {
-    run(gevulot_stone_verifier);
-  } else {
-    run_main(argc, argv);
-  }
+//   if (argc == 1) {
+//     run(gevulot_stone_verifier);
+//   } else {
+//     run_main(argc, argv);
+//   }
 
   printf("cpu_air_verifier_main::main(): Terminating...\n");
   return 0;

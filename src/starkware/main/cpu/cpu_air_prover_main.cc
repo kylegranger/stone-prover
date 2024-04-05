@@ -118,6 +118,7 @@ void* gevulot_stone_prover(const struct Task* task) {
   return result;
 }
 
+#if 0
 int main(int argc, char **argv)
 {
   printf("cpu_air_prover_main::main(): argc %d\n", argc);
@@ -166,6 +167,59 @@ int main(int argc, char **argv)
   }
 
   printf("cpu_air_prover_main::main(): Terminating...\n");
+  return 0;
+}
+#endif
+
+int main(int argc, char **argv)
+{
+  printf("openmp_test::main(): argc %d\n", argc);
+  printf("  Args: \n");
+  for (int i = 0; i < argc; i++) {
+    printf("    %d, %s\n", i, argv[i]);
+  }
+
+    // show_dir_content((char *)".");
+    // show_dir_content((char *)"/workspace");
+    show_dir_content((char *)"./gevulot");
+
+
+    auto ncpus = std::thread::hardware_concurrency();
+    printf("std::thread::hardware_concurrency %d\n", ncpus);
+
+    int nThreads = omp_get_num_threads();
+    printf("omp_get_num_threads A %d\n", nThreads);
+
+    // omp_set_num_threads(ncpus);
+    // nThreads = omp_get_num_threads();
+    // printf("omp_get_num_threads B %d\n", nThreads);
+
+    printf("do parallel omg run\n");
+    #pragma omp parallel
+    {
+        int idThread = omp_get_thread_num();
+        // int nThreads = omp_get_num_threads();
+        printf("idThread %d ", idThread);
+        // printf("nThreads %d\n", nThreads);
+    }
+    printf("\ndone parallel omg run\n");
+
+    printf("get omp_get_max_threads\n");
+    auto nthreads = omp_get_max_threads();
+    printf("omp_get_max_threads = %d\n", nthreads);
+    printf("get omp_get_num_procs\n");
+    auto nprocs = omp_get_num_procs();
+    printf("omp_get_num_procs = %d\n", nprocs);
+
+
+
+//   if (argc == 1) {
+//     run(gevulot_stone_prover);
+//   } else {
+//     run_main(argc, argv);
+//   }
+
+  printf("openmp_test::main(): Terminating...\n");
   return 0;
 }
 
