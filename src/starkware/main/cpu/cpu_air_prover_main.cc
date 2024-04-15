@@ -118,7 +118,7 @@ void* gevulot_stone_prover(const struct Task* task) {
   return result;
 }
 
-#if 0
+#if 1
 int main(int argc, char **argv)
 {
   printf("cpu_air_prover_main::main(): argc %d\n", argc);
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
   printf("cpu_air_prover_main::main(): Terminating...\n");
   return 0;
 }
-#endif
+#else
 
 int main(int argc, char **argv)
 {
@@ -223,3 +223,4 @@ int main(int argc, char **argv)
   return 0;
 }
 
+#endif
